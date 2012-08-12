@@ -4,13 +4,11 @@ service_list = [
     # gunicorn
     # git
     # nginx
-    {"message": "Updating Ubuntu"},
-    {"message": "Updating apt-get"},
-    {"message": "Installing venv"},
-    {"message": "Installing Nginx"},
-    {"message": "Configuring Nginx"},
-    {"message": "Installing Memecache"},
-    {"message": "Configuring Memecache"},
-    {"message": "Installing Gunicorn"},
-    {"message": "Configuring Gunicorn"},
+    # mysql
+    {"action":"run", "params":"whoami"},
+    {"action":"sudo", "params":"apt-get update", "message":"Updating apt-get"},
+    {"action":"apt",
+        "params":["mysql-client", "libmysqlclient-dev", "nginx", "memcached", "git",
+        "python-setuptools", "python-dev", "build-essential", "python-pip", "python-mysqldb"],
+        "message":"Installing apt-get packages"},
 ]

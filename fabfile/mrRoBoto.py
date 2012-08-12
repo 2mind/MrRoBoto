@@ -8,32 +8,35 @@ import boto.ec2
 # import the AWS config file and the software download list
 from aws_config import *
 from services import service_list
-# import os, time, sys for fun (j/k)
+# import os, time, sys for utilities
 import os
 import time
 import sys
 
+env.user = SERVER_USERNAME
+env.key_filename = SSH_PRIVATE_KEY_PATH
+env.host_string = ''
+
 def roBoto():
     print(_green("Konnichiwa, human!"))
-    check_env_vars("AWS_KEYPAIR", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY")
-    print(_green("Waiting for server to boot..."))
-    time.sleep(5)
-    #download()
+    # check_env_vars("AWS_KEYPAIR", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY")
+    # the host string is the return value of server, which is the public DNS
+    # env.host_string = server()
+    # print(_green("Waiting for server to boot..."))
+    # time.sleep(30)
+    download_services()
     print(_green("Domo arigato, human!"))
 
 def check_env_vars(*args):
     """
     Check if the boto environment variables have been defined
+    if they have, use them instead of the config values
     """
-    need_vars = False
-
     for var in args:
         if var in os.environ:
             aws_config[var] = os.environ[var]
 
-    create_server()
-
-def create_server():
+def server():
     """
     Creates an EC2 Instance
     """
@@ -56,9 +59,9 @@ def create_server():
     print(_green("Instance state: %s" % instance.state))
     print(_green("Public dns: %s" % instance.public_dns_name))
 
-    return instance.public_dns_name  
+    env.host_string = instance.public_dns_name  
 
-def download():
+def download_services():
     """
     Downloads the software you want on your instance
     """
@@ -67,6 +70,12 @@ def download():
     for item in service_list:
         try:
             print(_yellow(item['message']))
-            time.sleep(1)
         except KeyError:
             pass
+        globals()[item['action']](item['params'])
+
+# Install packages
+# Create virtualenv
+# Install django in virtualenv
+# Install gunicorn in virtualenv
+# Setup and run supervisor    
