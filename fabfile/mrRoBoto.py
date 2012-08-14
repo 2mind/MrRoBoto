@@ -6,7 +6,8 @@ from fabric.colors import green as _green, yellow as _yellow
 import boto
 import boto.ec2
 # import the AWS config file and the software download list
-from aws_config import *
+#from aws_config import *
+from secret_config import *
 from services import service_list
 # import os, time, sys for utilities
 import os
@@ -15,7 +16,7 @@ import sys
 
 env.user = SERVER_USERNAME
 env.key_filename = SSH_PRIVATE_KEY_PATH
-env.host_string = ''
+env.host_string = 'ec2-50-112-40-82.us-west-2.compute.amazonaws.com'
 
 def roBoto():
     print(_green("Konnichiwa, human!"))
@@ -59,7 +60,7 @@ def server():
     print(_green("Instance state: %s" % instance.state))
     print(_green("Public dns: %s" % instance.public_dns_name))
 
-    env.host_string = instance.public_dns_name  
+    return instance.public_dns_name  
 
 def download_services():
     """
@@ -73,6 +74,9 @@ def download_services():
         except KeyError:
             pass
         globals()[item['action']](item['params'])
+        
+        for pkg in params:
+            _sudo("apt-get install -qq %s" % pkg)
 
 # Install packages
 # Create virtualenv
